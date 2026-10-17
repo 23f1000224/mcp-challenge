@@ -68,7 +68,9 @@ class ChallengeHeaderMiddleware:
 
 
 if __name__ == "__main__":
-    app = ChallengeHeaderMiddleware(mcp.streamable_http_app())
+    app = ChallengeHeaderMiddleware(
+    mcp.streamable_http_app(host="0.0.0.0")
+    )
 
     uvicorn.run(
         app,
