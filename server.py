@@ -5,6 +5,7 @@ import os
 
 import uvicorn
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 
 EMAIL = "23f1000224@ds.study.iitm.ac.in"
 
