@@ -5,6 +5,7 @@ import os
 
 import uvicorn
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 
 EMAIL = "23f1000224@ds.study.iitm.ac.in"
 
@@ -12,7 +13,14 @@ current_challenge = contextvars.ContextVar(
     "current_challenge", default=None
 )
 
-mcp = FastMCP("Exam Challenge Server")
+security = TransportSecuritySettings(
+    enable_dns_rebinding_protection=False
+)
+
+mcp = FastMCP(
+    "Exam Challenge Server",
+    transport_security=security,
+)
 
 
 @mcp.tool()
@@ -57,9 +65,7 @@ class ChallengeHeaderMiddleware:
 
 
 if __name__ == "__main__":
-    app = ChallengeHeaderMiddleware(
-        mcp.streamable_http_app(host="0.0.0.0")
-    )
+    app = ChallengeHeaderMiddleware(mcp.streamable_http_app())
 
     uvicorn.run(
         app,
