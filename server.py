@@ -13,7 +13,17 @@ current_challenge = contextvars.ContextVar(
     "current_challenge", default=None
 )
 
-mcp = FastMCP("Exam Challenge Server")
+security = TransportSecuritySettings(
+    allowed_hosts=[
+        "mcp-challenge-mgv6.onrender.com",
+        "mcp-challenge-mgv6.onrender.com:*",
+    ]
+)
+
+mcp = FastMCP(
+    "Exam Challenge Server",
+    transport_security=security,
+)
 
 
 @mcp.tool()
@@ -34,8 +44,6 @@ def solve_challenge() -> str:
 
 
 class ChallengeHeaderMiddleware:
-    """Capture the challenge header for each HTTP request."""
-
     def __init__(self, app):
         self.app = app
 
@@ -49,8 +57,9 @@ class ChallengeHeaderMiddleware:
             for key, value in scope.get("headers", [])
         }
 
-        challenge = headers.get("x-exam-challenge")
-        token = current_challenge.set(challenge)
+        token = current_challenge.set(
+            headers.get("x-exam-challenge")
+        )
 
         try:
             await self.app(scope, receive, send)
@@ -59,16 +68,7 @@ class ChallengeHeaderMiddleware:
 
 
 if __name__ == "__main__":
-    security = TransportSecuritySettings(
-        allowed_hosts=[
-            "mcp-challenge-mgv6.onrender.com",
-            "mcp-challenge-mgv6.onrender.com:*",
-        ]
-    )
-
-    app = ChallengeHeaderMiddleware(
-        mcp.streamable_http_app(transport_security=security)
-    )
+    app = ChallengeHeaderMiddleware(mcp.streamable_http_app())
 
     uvicorn.run(
         app,
