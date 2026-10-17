@@ -60,7 +60,16 @@ class ChallengeHeaderMiddleware:
 
 
 if __name__ == "__main__":
-    app = ChallengeHeaderMiddleware(mcp.streamable_http_app())
+    security = TransportSecuritySettings(
+    allowed_hosts=[
+        "mcp-challenge-mgv6.onrender.com",
+        "mcp-challenge-mgv6.onrender.com:*",
+    ]
+)
+
+app = ChallengeHeaderMiddleware(
+    mcp.streamable_http_app(transport_security=security)
+)
 
     uvicorn.run(
         app,
