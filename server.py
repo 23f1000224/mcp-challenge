@@ -20,6 +20,8 @@ security = TransportSecuritySettings(
 mcp = FastMCP(
     "Exam Challenge Server",
     transport_security=security,
+    stateless_http=True,
+    json_response=True,
 )
 
 
