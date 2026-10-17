@@ -9,7 +9,6 @@ from mcp.server.transport_security import TransportSecuritySettings
 
 EMAIL = "23f1000224@ds.study.iitm.ac.in"
 
-# Stores the challenge for the current HTTP request.
 current_challenge = contextvars.ContextVar(
     "current_challenge", default=None
 )
@@ -61,19 +60,18 @@ class ChallengeHeaderMiddleware:
 
 if __name__ == "__main__":
     security = TransportSecuritySettings(
-    allowed_hosts=[
-        "mcp-challenge-mgv6.onrender.com",
-        "mcp-challenge-mgv6.onrender.com:*",
-    ]
-)
+        allowed_hosts=[
+            "mcp-challenge-mgv6.onrender.com",
+            "mcp-challenge-mgv6.onrender.com:*",
+        ]
+    )
 
-app = ChallengeHeaderMiddleware(
-    mcp.streamable_http_app(transport_security=security)
-)
+    app = ChallengeHeaderMiddleware(
+        mcp.streamable_http_app(transport_security=security)
+    )
 
     uvicorn.run(
         app,
         host="0.0.0.0",
         port=int(os.environ.get("PORT", "8000")),
     )
-
